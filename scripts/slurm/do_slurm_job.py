@@ -61,7 +61,7 @@ def main():
     --num_processes {NUM_PROCESSES} \
     --num_machines {args.n_nodes}"""
         elif args.launcher == "torchrun":
-            distribute = 'python -m torch.distributed.run --nnodes="$SLURM_NNODES" --nproc-per-node=gpu --rdzv-id="$SLURM_JOBID" --rdzv-endpoint=$(scontrol show hostnames "$SLURM_JOB_NODELIST" | head -n 1) --rdzv-backend="c10d"'
+            distribute = f'python -m torch.distributed.run --nnodes="$SLURM_NNODES" --nproc-per-node={args.n_gpu} --rdzv-id="$SLURM_JOBID" --rdzv-endpoint=$(scontrol show hostnames "$SLURM_JOB_NODELIST" | head -n 1) --rdzv-backend="c10d"'
         else:
             raise ValueError("Unknown launcher", args.launcher)
     else:
