@@ -4,6 +4,7 @@
 import importlib
 from functools import partial
 from pathlib import Path
+import os
 
 import torch
 import datasets
@@ -66,7 +67,7 @@ def get_preprocessed_dataset(
     tokenizer, dataset_config, split: str = "train"
 ) -> torch.utils.data.Dataset:
     if not dataset_config.dataset in DATASET_PREPROC:
-        return datasets.load_dataset(dataset_config.dataset, split=split)
+        return datasets.load_from_disk(os.path.join(dataset_config.dataset, split))
 
     def get_split():
         return (
