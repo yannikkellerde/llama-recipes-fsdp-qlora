@@ -6,6 +6,7 @@ from functools import partial
 from pathlib import Path
 
 import torch
+import datasets
 
 from llama_recipes.datasets import (
     get_grammar_dataset,
@@ -39,13 +40,17 @@ def get_custom_dataset(dataset_config, tokenizer, split: str):
 
     module_path = Path(module_path)
     if not module_path.is_file():
-        raise FileNotFoundError(f"Dataset py file {module_path.as_posix()} does not exist or is not a file.")
+        raise FileNotFoundError(
+            f"Dataset py file {module_path.as_posix()} does not exist or is not a file."
+        )
 
     module = load_module_from_py_file(module_path.as_posix())
     try:
         return getattr(module, func_name)(dataset_config, tokenizer, split)
     except AttributeError as e:
-        print(f"It seems like the given method name ({func_name}) is not present in the dataset .py file ({module_path.as_posix()}).")
+        print(
+            f"It seems like the given method name ({func_name}) is not present in the dataset .py file ({module_path.as_posix()})."
+        )
         raise e
 
 
@@ -61,7 +66,7 @@ def get_preprocessed_dataset(
     tokenizer, dataset_config, split: str = "train"
 ) -> torch.utils.data.Dataset:
     if not dataset_config.dataset in DATASET_PREPROC:
-        raise NotImplementedError(f"{dataset_config.dataset} is not (yet) implemented")
+        return datasets.load_dataset(dataset_config.dataset, split=split)
 
     def get_split():
         return (
